@@ -56,15 +56,12 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         var config = new CorsConfiguration();
 
-        // 💡 IMPORTANTE: Las URLs no deben llevar la barra diagonal (/) al final.
         config.setAllowedOrigins(List.of(
-                "http://localhost:3000", // Para desarrollo local
-                "https://todofront-production-d1bf.up.railway.app", // Para producción explícita
-                frontendUrl // Por si inyectas otras por variables de entorno
-        ));
-
+                "http://localhost:3000",
+                "https://todofront-production-d1bf.up.railway.app"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "Origin", "X-Requested-With"));
+        config.setExposedHeaders(List.of("Authorization")); // Obliga a exponer el token si lo mandas en cabecera
         config.setAllowCredentials(true);
 
         var source = new UrlBasedCorsConfigurationSource();
