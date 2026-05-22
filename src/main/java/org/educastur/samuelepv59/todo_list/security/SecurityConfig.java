@@ -75,19 +75,18 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         var config = new CorsConfiguration();
 
-        // 1. Ponemos la URL EXACTA de tu frontend en Railway (y localhost para cuando
-        // programes en tu PC)
+        // 1. URL exacta del frontend (Railway) y localhost para desarrollo local
         config.setAllowedOrigins(List.of(
                 "https://todofront-production-d1bf.up.railway.app",
                 "http://localhost:3000"));
 
-        // 2. Permitimos todos los métodos, incluyendo OPTIONS
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        // 2. Métodos permitidos (incluyendo OPTIONS que es el que te está fallando)
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
 
-        // 3. Permitimos todos los headers (necesario para el token JWT)
-        config.setAllowedHeaders(List.of("*"));
+        // 3. Cabeceras permitidas (imprescindible para JWT y JSON)
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
 
-        // 4. Permitimos credenciales (importante para muchas configuraciones de Axios)
+        // 4. Permitir credenciales (Clave para que Axios funcione bien con tokens)
         config.setAllowCredentials(true);
 
         var source = new UrlBasedCorsConfigurationSource();
