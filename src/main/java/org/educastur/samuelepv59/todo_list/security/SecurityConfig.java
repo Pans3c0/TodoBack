@@ -52,16 +52,42 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // @Bean
+    // public CorsConfigurationSource corsConfigurationSource() {
+    // var config = new CorsConfiguration();
+
+    // config.setAllowedOrigins(List.of(
+    // "http://localhost:3000",
+    // "https://todofront-production-d1bf.up.railway.app"));
+    // config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    // config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept",
+    // "Origin", "X-Requested-With"));
+    // config.setExposedHeaders(List.of("Authorization")); // Obliga a exponer el
+    // token si lo mandas en cabecera
+    // config.setAllowCredentials(true);
+
+    // var source = new UrlBasedCorsConfigurationSource();
+    // source.registerCorsConfiguration("/**", config);
+    // return source;
+    // }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         var config = new CorsConfiguration();
 
+        // 1. Ponemos la URL EXACTA de tu frontend en Railway (y localhost para cuando
+        // programes en tu PC)
         config.setAllowedOrigins(List.of(
-                "http://localhost:3000",
-                "https://todofront-production-d1bf.up.railway.app"));
+                "https://todofront-production-d1bf.up.railway.app",
+                "http://localhost:3000"));
+
+        // 2. Permitimos todos los métodos, incluyendo OPTIONS
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "Origin", "X-Requested-With"));
-        config.setExposedHeaders(List.of("Authorization")); // Obliga a exponer el token si lo mandas en cabecera
+
+        // 3. Permitimos todos los headers (necesario para el token JWT)
+        config.setAllowedHeaders(List.of("*"));
+
+        // 4. Permitimos credenciales (importante para muchas configuraciones de Axios)
         config.setAllowCredentials(true);
 
         var source = new UrlBasedCorsConfigurationSource();
