@@ -54,13 +54,32 @@ public class SecurityConfig {
     // --- LA SOLUCIÓN DEFINITIVA DE CORS ---
     // Este filtro se ejecuta con la máxima prioridad, antes de que Spring Security
     // pueda bloquear nada.
+//    @Bean
+//    public FilterRegistrationBean<CorsFilter> customCorsFilter() {
+//        CorsConfiguration config = new CorsConfiguration();
+//        config.setAllowCredentials(true);
+//        config.setAllowedOrigins(List.of("https://todofront-production-d1bf.up.railway.app", "http://localhost:3000"));
+//
+//        // El asterisco permite CUALQUIER cabecera que Axios necesite enviar
+//        config.setAllowedHeaders(List.of("*"));
+//        config.setAllowedMethods(List.of("*"));
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", config);
+//
+//        FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
+//        bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+//        return bean;
+//    }
     @Bean
     public FilterRegistrationBean<CorsFilter> customCorsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("https://todofront-production-d1bf.up.railway.app", "http://localhost:3000"));
 
-        // El asterisco permite CUALQUIER cabecera que Axios necesite enviar
+        // ¡LA CLAVE ESTÁ AQUÍ! Usamos OriginPatterns en lugar de AllowedOrigins
+        // Esto permite el comodín "*" incluso enviando tokens y credenciales.
+        config.setAllowedOriginPatterns(List.of("*"));
+
         config.setAllowedHeaders(List.of("*"));
         config.setAllowedMethods(List.of("*"));
 
