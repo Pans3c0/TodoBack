@@ -6,14 +6,3 @@ COPY target/todo-list-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8080
 # Comando para ejecutar la aplicación
 ENTRYPOINT ["java", "-jar", "app.jar"]
-
-# (Tus pasos anteriores de Node/Build) ...
-
-FROM nginx:alpine
-COPY --from=build /app/build /usr/share/nginx/html
-
-# AÑADE ESTA LÍNEA EXACTA:
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
