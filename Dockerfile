@@ -1,8 +1,14 @@
-FROM eclipse-temurin:21-jdk-alpine
+# ETAPA 1: Construcción
+FROM eclipse-temurin:21-jdk-alpine AS build
 WORKDIR /app
-# Copiamos el .jar generado por Maven al contenedor
-COPY target/todo-list-0.0.1-SNAPSHOT.jar app.jar
-# Exponemos el puerto 8080 (donde corre Spring Boot)
+COPY . .
+# Compilamos el proyecto creando el .jar
+RUN ./mvnw clean package -DskipTests
+
+# ETAPA 2: Ejecución (Imagen final súper ligera)
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+# Copiamos solo el .jar de la etapa anterior
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-# Comando para ejecutar la aplicación
 ENTRYPOINT ["java", "-jar", "app.jar"]
