@@ -15,8 +15,7 @@
 
 // @Component
 // @Order(Ordered.HIGHEST_PRECEDENCE) // Esto garantiza que sea lo PRIMERO en
-// ejecutarse
-// public class GlobalCorsFilter implements Filter {
+// ejecutarse public class GlobalCorsFilter implements Filter {
 
 // @Override
 // public void doFilter(ServletRequest req, ServletResponse res, FilterChain
