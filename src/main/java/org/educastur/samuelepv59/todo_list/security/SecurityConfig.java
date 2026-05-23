@@ -1,10 +1,11 @@
 package org.educastur.samuelepv59.todo_list.security;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -12,8 +13,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import java.util.List;
 
@@ -30,9 +31,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // 1. ACTIVAMOS EL CORS NATIVO (Customizer.withDefaults())
-                // Esto le dice a Spring que busque el bean "corsConfigurationSource" que está abajo
-                .cors(Customizer.withDefaults())
+                // APAGAMOS el CORS de Security porque nuestro GlobalCorsFilter manda ahora
+                .cors(cors -> cors.disable())
 
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> {
@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register", "/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        // Quitamos el OPTIONS de aquí porque el GlobalCorsFilter lo gestiona
                         .anyRequest().authenticated())
                 .csrf(csrf -> csrf.disable())
                 .headers(h -> h.frameOptions(opts -> opts.disable()))
@@ -51,22 +51,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // 2. EL BEAN OFICIAL DE CORS EN SPRING SECURITY
-    // Al usar este formato, Spring lo inyecta en el momento exacto,
-    // DESPUÉS de procesar los proxies de Railway.
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.setAllowedOriginPatterns(List.of("*"));
-        config.setAllowedHeaders(List.of("*"));
-
-        // Es más seguro para los navegadores listar los métodos que poner "*"
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-
-        return source;
-    }
+    // IMPORTANTE: BORRA el bean corsConfigurationSource() que creamos antes.
+    // Ya no lo necesitamos.
 }
